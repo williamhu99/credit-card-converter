@@ -226,7 +226,7 @@ def decodeR(input1):
 
 if input3 == '16':
 	input1 = convert(input1)
-	print input1
+	print "Your input in binary is: " + input1
 
 if input2 == 'L':
 	decodeL(input1)
