@@ -121,7 +121,7 @@ def lookup(next_string):
 
 
 # Decodes the input string from left to right
-def decode(input1):
+def decodeL(input1):
 	# Finds the start sentinel (SS)
 	while input1[0:7] != "0001011":
 		input1 = input1[1:len(input1)]
@@ -147,8 +147,34 @@ def decode(input1):
 		else:
 			print lookup(next_string),
 
+# Decodes the input string from right to left
+def decodeR(input1):
+	# Finds the start sentinel (SS)
+	while input1[0:7] != "1010001":
+		input1 = input1[1:len(input1)]
+		if len(input1) < 7:
+			print "Error. No start sentinel."
+			break
+
+	# Starts decoding
+	input1 = input1[7:len(input1)]
+
+	while len(input1) >= 7:
+		next_string = input1[0:7]
+		input1 = input1[7:len(input1)]
+
+		# First checks for the Field Sentinel
+		if next_string == "0111110":
+			print " FS ",
+		elif next_string == "1111100":
+			print " ES ",
+			if len(input1) >= 7:
+				print lookup(input1[0:6:-1]),
+			break
+		else:
+			print lookup(next_string[0:6:-1]),
+
 if input2 == 'L':
-	decode(input1)
+	decodeL(input1)
 else:
-	input1 = input1[::-1]
-	decode(input1)
+	decodeR(input1)
