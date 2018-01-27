@@ -12,7 +12,7 @@ while proper_input == False:
 		print "The string is too short."
 	else:
 		for char in input1:
-			if char != '1' and char != '0':
+			if char < '0' or (char > '9' and char < 'A') or char > 'F':
 				proper_input = False
 				print "Invalid string."
 				break
@@ -23,6 +23,16 @@ proper_input = False
 while proper_input == False:
 	input2 = raw_input("Enter 'L' if the most significant bit is on the left or 'R' if the most significant bit is on the right: ")
 	if input2 == 'L' or input2 == 'R':
+		proper_input = True
+	else:
+		print "Invalid input."
+
+proper_input = False
+
+# Asks whether the input is hexadecimal or binary
+while proper_input == False:
+	input3 = raw_input("Enter '2' if the input is in binary or '16' if the input is in hex: ")
+	if input3 == '2' or input3 == '16':
 		proper_input = True
 	else:
 		print "Invalid input."
@@ -119,8 +129,48 @@ def lookup(next_string):
 	else:
 		return "NULL"
 
+# Converts a hexadecimal string into a binary string
+def convert(input1):
+	if len(input1) == 0:
+		return ""
+	else:
+		digit = input1[0:1]
+		if digit == "0":
+			return "0000" + convert(input1[1:len(input1)])
+		elif digit == "1":
+			return "0001" + convert(input1[1:len(input1)])
+		elif digit == "2":
+			return "0010" + convert(input1[1:len(input1)])
+		elif digit == "3":
+			return "0011" + convert(input1[1:len(input1)])
+		elif digit == "4":
+			return "0100" + convert(input1[1:len(input1)])
+		elif digit == "5":
+			return "0101" + convert(input1[1:len(input1)])
+		elif digit == "6":
+			return "0110" + convert(input1[1:len(input1)])
+		elif digit == "7":
+			return "0111" + convert(input1[1:len(input1)])
+		elif digit == "8":
+			return "1000" + convert(input1[1:len(input1)])
+		elif digit == "9":
+			return "1001" + convert(input1[1:len(input1)])
+		elif digit == "A":
+			return "1010" + convert(input1[1:len(input1)])
+		elif digit == "B":
+			return "1011" + convert(input1[1:len(input1)])
+		elif digit == "C":
+			return "1100" + convert(input1[1:len(input1)])
+		elif digit == "D":
+			return "1101" + convert(input1[1:len(input1)])
+		elif digit == "E":
+			return "1110" + convert(input1[1:len(input1)])
+		elif digit == "F":
+			return "1111" + convert(input1[1:len(input1)])
+		else:
+			return "NULL"
 
-# Decodes the input string from left to right
+# Decodes the input string with the most significant bit on the left
 def decodeL(input1):
 	# Finds the start sentinel (SS)
 	while input1[0:7] != "0001011":
@@ -142,12 +192,12 @@ def decodeL(input1):
 		elif next_string == "0111110":
 			print " ES ",
 			if len(input1) >= 7:
-				print lookup(input1[0:7]),
+				print lookup(input1[0:6:-1]),
 			break
 		else:
-			print lookup(next_string),
+			print lookup(next_string[0:6:-1]),
 
-# Decodes the input string from right to left
+# Decodes the input string with the most significant bit on the right
 def decodeR(input1):
 	# Finds the start sentinel (SS)
 	while input1[0:7] != "1010001":
@@ -169,10 +219,14 @@ def decodeR(input1):
 		elif next_string == "1111100":
 			print " ES ",
 			if len(input1) >= 7:
-				print lookup(input1[0:6:-1]),
+				print lookup(input1[0:7]),
 			break
 		else:
-			print lookup(next_string[0:6:-1]),
+			print lookup(next_string[0:7]),
+
+if input3 == '16':
+	input1 = convert(input1)
+	print input1
 
 if input2 == 'L':
 	decodeL(input1)
