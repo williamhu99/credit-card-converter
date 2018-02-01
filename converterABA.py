@@ -1,4 +1,4 @@
-# This program decodes the information stored in a credit card based on IATA Encoding
+# This program decodes the information stored in a credit card based on ABA Encoding
 proper_input = False
 input1 = ""
 input2 = ""
@@ -6,8 +6,8 @@ input2 = ""
 # Asks the user for input
 while proper_input == False:
 	proper_input = True
-	input1 = raw_input("Please enter a string of binary digits to decode: ")
-	if len(input1) < 7:
+	input1 = raw_input("Please enter a string of binary or hexadecimal digits to decode: ")
+	if len(input1) < 5:
 		proper_input = False
 		print "The string is too short."
 	else:
@@ -37,97 +37,32 @@ while proper_input == False:
 	else:
 		print "Invalid input."
 
-# Implements the lookup table for IATA Encoding
+# Implements the lookup table for ABA Encoding
+# ND = not a digit
 def lookup(next_string):
-	lookup_string = next_string[0:6]
-	if lookup_string == "000000":
-		return " SP "
-	elif lookup_string == "000010":
+	lookup_string = next_string[0:4]
+	if lookup_string == "0000":
 		return "0"
-	elif lookup_string == "000011":
-		return "P"
-	elif lookup_string == "000100":
-		return "("
-	elif lookup_string == "000101":
-		return "H"
-	elif lookup_string == "000110":
-		return "8"
-	elif lookup_string == "000111":
-		return "X"
-	elif lookup_string == "001000":
-		return "$"
-	elif lookup_string == "001001":
-		return "D"
-	elif lookup_string == "001010":
-		return "4"
-	elif lookup_string == "001011":
-		return "T"
-	elif lookup_string == "001101":
-		return "L"
-	elif lookup_string == "010001":
-		return "B"
-	elif lookup_string == "010010":
-		return "2"
-	elif lookup_string == "010011":
-		return "R"
-	elif lookup_string == "010101":
-		return "J"
-	elif lookup_string == "010111":
-		return "Z"
-	elif lookup_string == "011001":
-		return "F"
-	elif lookup_string == "011010":
-		return "6"
-	elif lookup_string == "011011":
-		return "V"
-	elif lookup_string == "011100":
-		return "."
-	elif lookup_string == "011101":
-		return "N"
-	elif lookup_string == "100001":
-		return "A"
-	elif lookup_string == "100010":
+	elif lookup_string == "0001":
 		return "1"
-	elif lookup_string == "100011":
-		return "Q"
-	elif lookup_string == "100100":
-		return ")"
-	elif lookup_string == "100101":
-		return "I"
-	elif lookup_string == "100110":
-		return "9"
-	elif lookup_string == "100111":
-		return "Y"
-	elif lookup_string == "101001":
-		return "E"
-	elif lookup_string == "101010":
-		return "5"
-	elif lookup_string == "101011":
-		return "U"
-	elif lookup_string == "101100":
-		return "--"
-	elif lookup_string == "101101":
-		return "M"
-	elif lookup_string == "110001":
-		return "C"
-	elif lookup_string == "110010":
+	elif lookup_string == "0010":
+		return "2"
+	elif lookup_string == "0011":
 		return "3"
-	elif lookup_string == "110011":
-		return "S"
-	elif lookup_string == "110101":
-		return "K"
-	elif lookup_string == "111001":
-		return "G"
-	elif lookup_string == "111010":
+	elif lookup_string == "0100":
+		return "4"
+	elif lookup_string == "0101":
+		return "5"
+	elif lookup_string == "0110":
+		return "6"
+	elif lookup_string == "0111":
 		return "7"
-	elif lookup_string == "111011":
-		return "W"
-	elif lookup_string == "111100":
-		return "/"
-	elif lookup_string == "111101":
-		return "O"
+	elif lookup_string == "1000":
+		return "8"
+	elif lookup_string == "1001":
+		return "9"
 	else:
-		return "NULL"
+		return "ND"
 
 # Converts a hexadecimal string into a binary string
 def convert(input1):
@@ -173,56 +108,58 @@ def convert(input1):
 # Decodes the input string with the most significant bit on the left
 def decodeL(input1):
 	# Finds the start sentinel (SS)
-	while input1[0:7] != "0001011":
+	while input1[0:5] != "10110":
 		input1 = input1[1:len(input1)]
-		if len(input1) < 7:
+		if len(input1) < 5:
 			print "Error. No start sentinel."
 			break
 
 	# Starts decoding
-	input1 = input1[7:len(input1)]
+	input1 = input1[5:len(input1)]
 
-	while len(input1) >= 7:
-		next_string = input1[0:7]
-		input1 = input1[7:len(input1)]
+	while len(input1) >= 5:
+		next_string = input1[0:5]
+		input1 = input1[5:len(input1)]
 
 		# First checks for the Field Sentinel
-		if next_string == "1111100":
+		if next_string == "10110":
 			print " FS ",
-		elif next_string == "0111110":
+		elif next_string == "11111":
 			print " ES ",
-			if len(input1) >= 7:
-				print lookup(input1[0:6:-1]),
+			if len(input1) >= 5:
+				print lookup(input1[0:4]),
 			break
 		else:
-			print lookup(next_string[0:6:-1]),
+			print lookup(next_string[0:4]),
 
 # Decodes the input string with the most significant bit on the right
 def decodeR(input1):
 	# Finds the start sentinel (SS)
-	while input1[0:7] != "1010001":
+	while input1[0:5] != "11010":
 		input1 = input1[1:len(input1)]
-		if len(input1) < 7:
+		if len(input1) < 5:
 			print "Error. No start sentinel."
 			break
 
 	# Starts decoding
-	input1 = input1[7:len(input1)]
+	input1 = input1[5:len(input1)]
 
-	while len(input1) >= 7:
-		next_string = input1[0:7]
-		input1 = input1[7:len(input1)]
+	while len(input1) >= 5:
+		next_string = input1[0:5]
+		input1 = input1[5:len(input1)]
 
 		# First checks for the Field Sentinel
-		if next_string == "0111110":
+		if next_string == "10110":
 			print " FS ",
-		elif next_string == "1111100":
+		elif next_string == "11111":
 			print " ES ",
-			if len(input1) >= 7:
-				print lookup(input1[0:7]),
+			if len(input1) >= 5:
+				temp = input1[0:4]
+				print lookup(temp[::-1]),
 			break
 		else:
-			print lookup(next_string[0:7]),
+			temp = next_string[0:4]
+			print lookup(temp[::-1]),
 
 if input3 == '16':
 	input1 = convert(input1)
